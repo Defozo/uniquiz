@@ -35,6 +35,18 @@ public class ExampleQuestionsLoader extends UniquizQuestionsLoader {
         lines.add("c.Phycology");
         lines.add(">d.Ichtyology");
         lines.add("");
+        lines.add("What is the name of study of viruses?");
+        lines.add("a.Phycology");
+        lines.add("b.Limnology");
+        lines.add(">c.Virology");
+        lines.add("d.Mammalogy");
+        lines.add("");
+        lines.add("What is the namy of study of birds?");
+        lines.add("a.Virology");
+        lines.add("b.Mammalogy");
+        lines.add(">c.Ornithology");
+        lines.add("d.Botany");
+        lines.add("");
         lines.add(">end");
         List<CategoriesLinesAccumulator> list = new ArrayList<>();
         lines.stream().forEach((el) -> splitIntoQuestions(list, el));
