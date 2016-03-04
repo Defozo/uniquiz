@@ -1,0 +1,14 @@
+
+What is the name of study of plants?
+>a.Botany
+b.Limnology
+c.Biophysics
+d.Mammalogy
+
+What is the name of study of fish?
+a.Mammalogy
+b.Ornithology
+c.Phycology
+>d.Ichtyology
+
+>end
