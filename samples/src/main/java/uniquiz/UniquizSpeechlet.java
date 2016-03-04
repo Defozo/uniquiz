@@ -176,7 +176,7 @@ public class UniquizSpeechlet implements Speechlet {
                 speechText = "Right";
                 session.setAttribute(SCORE, score + 1);
             } else {
-                speechText = "Sorry, bad answer";
+                speechText = "Sorry, bad answer, you said " + response + " and correct one is " + askedQuestion.correct();
             }
         } else {
             speechText = "Sorry, no question was asked";

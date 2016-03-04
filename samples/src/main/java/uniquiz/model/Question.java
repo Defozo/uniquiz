@@ -23,6 +23,14 @@ public class Question {
 
     }
 
+    public String correct() {
+        if (correct.size() > 0) {
+            return correct.get(0);
+        } else {
+            return "no right answer";
+        }
+    }
+
     private void addAnswerFor(String answerLine) {
         String[] arr = answerLine.split("\\.");
         if (arr[0].startsWith(">")) {
