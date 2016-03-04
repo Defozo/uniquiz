@@ -22,7 +22,7 @@ import session.*;
  * this project using the {@code lambda-compile} Ant task and upload the resulting zip file to power
  * your function.
  */
-public class SessionSpeechletRequestStreamHandler extends SpeechletRequestStreamHandler {
+public class UniquizSpeechletRequestStreamHandler extends SpeechletRequestStreamHandler {
     private static final Set<String> supportedApplicationIds;
 
     static {
@@ -34,7 +34,7 @@ public class SessionSpeechletRequestStreamHandler extends SpeechletRequestStream
         // supportedApplicationIds.add("amzn1.echo-sdk-ams.app.[unique-value-here]");
     }
 
-    public SessionSpeechletRequestStreamHandler() {
+    public UniquizSpeechletRequestStreamHandler() {
         super(new session.SessionSpeechlet(), supportedApplicationIds);
     }
 }

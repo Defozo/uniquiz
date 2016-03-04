@@ -1,16 +1,24 @@
 {
   "intents": [
     {
-      "intent": "MyColorIsIntent",
+      "intent": "StartQuizIntent",
       "slots": [
         {
-          "name": "Color",
-          "type": "LIST_OF_COLORS"
+          "name": "Category"
         }
       ]
     },
     {
-      "intent": "WhatsMyColorIntent"
+      "intent": "EndQuizIntent"
+    },
+    {
+      "intent": "ResponseIntent",
+      "slots": [
+        {
+          "name": "Response",
+          "type": "LIST_OF_RESPONSES"
+        }
+      ]
     }
   ]
 }

@@ -9,6 +9,7 @@
  */
 package uniquiz;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,22 +29,27 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
+import uniquiz.model.Question;
 
 /**
  * This sample shows how to create a simple speechlet for handling intent requests and managing
  * session interactions.
  */
-public class SessionSpeechlet implements Speechlet {
-    private static final Logger log = LoggerFactory.getLogger(SessionSpeechlet.class);
+public class UniquizSpeechlet implements Speechlet {
+    private static final Logger log = LoggerFactory.getLogger(UniquizSpeechlet.class);
 
     private static final String COLOR_KEY = "COLOR";
     private static final String COLOR_SLOT = "Color";
+
+    private QuizController qc;
+    private Map<String, List<Question>> quizzes;
 
     @Override
     public void onSessionStarted(final SessionStartedRequest request, final Session session)
             throws SpeechletException {
         log.info("onSessionStarted requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
+        initializeQuizzes();
         // any initialization logic goes here
     }
 
@@ -82,6 +88,12 @@ public class SessionSpeechlet implements Speechlet {
         log.info("onSessionEnded requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
         // any cleanup logic goes here
+    }
+
+    private void initializeQuizzes() {
+        UniquizQuestionsLoader uql = new UniquizQuestionsLoader();
+        quizzes = uql.loadQuestions();
+        qc = new QuizController(quizzes.get("biology"));
     }
 
     /**
