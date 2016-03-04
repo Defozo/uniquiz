@@ -12,6 +12,7 @@ public class Question {
     private String question;
     private Map<String, String> answers = new HashMap<>();
     private List<String> correct = new ArrayList<>();
+    private int id;
 
     public Question(CategoriesLinesAccumulator cla) {
         List<String> tmpList = cla.getLines();
@@ -31,6 +32,26 @@ public class Question {
         } else {
             answers.put(arr[0], arr[1]);
         }
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public Map<String, String> getAnswers() {
+        return answers;
+    }
+
+    public boolean isCorrect(String response) {
+        return correct.contains(response);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

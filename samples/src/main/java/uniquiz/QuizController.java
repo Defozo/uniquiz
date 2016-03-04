@@ -2,6 +2,7 @@ package uniquiz;
 
 import uniquiz.model.Question;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,8 +16,20 @@ public class QuizController {
         this.questions = questions;
     }
 
+    public Question forId(int id) {
+        if (id < questions.size()) {
+            return this.questions.get(id);
+        } else {
+            return null;
+        }
+    }
+
     public Question getRandomQuestion() {
-        Collections.shuffle(questions);
-        return questions.get(0);
+        List<Question> toShuffle = new ArrayList<>(questions);
+        Collections.shuffle(toShuffle);
+
+        Question res = toShuffle.get(0);
+        res.setId(questions.indexOf(res));
+        return res;
     }
 }

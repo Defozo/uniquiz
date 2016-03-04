@@ -38,17 +38,24 @@ import uniquiz.model.Question;
 public class UniquizSpeechlet implements Speechlet {
     private static final Logger log = LoggerFactory.getLogger(UniquizSpeechlet.class);
 
-    private static final String COLOR_KEY = "COLOR";
-    private static final String COLOR_SLOT = "Color";
+    private static final String QUIZ_NAME = "QUIZ_NAME";
+    private static final String SCORE = "SCORE";
+    private static final String ALREADY_ASKED_COUNT = "ALREADY_ASKED_COUNT";
+    private static final String ASKED_QUESTION_ID = "ASKED_QUESTION_ID";
+    private static final String RESPONSE_SLOT = "Response";
+    private static final String CATEGORY_SLOT = "Category";
 
-    private QuizController qc;
-    private Map<String, List<Question>> quizzes;
+    private Map<String, List<Question>> quizzes = null;
 
     @Override
     public void onSessionStarted(final SessionStartedRequest request, final Session session)
             throws SpeechletException {
         log.info("onSessionStarted requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
+        session.setAttribute(QUIZ_NAME, "");
+        session.setAttribute(SCORE, 0);
+        session.setAttribute(ALREADY_ASKED_COUNT, 0);
+        session.setAttribute(ASKED_QUESTION_ID, -1);
         initializeQuizzes();
         // any initialization logic goes here
     }
@@ -73,10 +80,14 @@ public class UniquizSpeechlet implements Speechlet {
 
         // Note: If the session is started with an intent, no welcome message will be rendered;
         // rather, the intent specific response will be returned.
-        if ("MyColorIsIntent".equals(intentName)) {
-            return setColorInSession(intent, session);
-        } else if ("WhatsMyColorIntent".equals(intentName)) {
-            return getColorFromSession(intent, session);
+        int questionId = (int) session.getAttribute(ASKED_QUESTION_ID);
+
+        if ("StartQuizIntent".equals(intentName)) {
+            return startQuiz(intent, session);
+        } else if ("EndQuizIntent".equals(intentName)) {
+            return endQuiz(intent, session);
+        } else if ("ResponseIntent".equals(intentName) && questionId != -1) {
+            return respondToQuestion(intent, session);
         } else {
             throw new SpeechletException("Invalid Intent");
         }
@@ -93,7 +104,66 @@ public class UniquizSpeechlet implements Speechlet {
     private void initializeQuizzes() {
         UniquizQuestionsLoader uql = new UniquizQuestionsLoader();
         quizzes = uql.loadQuestions();
-        qc = new QuizController(quizzes.get("biology"));
+    }
+
+    private SpeechletResponse startQuiz(final Intent intent, final Session session) {
+        session.setAttribute(QUIZ_NAME, "biology");
+        return askQuestion(intent, session);
+    }
+
+    private SpeechletResponse askQuestion(final Intent intent, final Session session) {
+        String name = (String) session.getAttribute(QUIZ_NAME);
+        QuizController qc = new QuizController(quizzes.get(name));
+        Question askedQuestion = qc.getRandomQuestion();
+        session.setAttribute(ASKED_QUESTION_ID, askedQuestion.getId());
+        String speech = askedQuestion.getQuestion();
+        int asked = (int) session.getAttribute(ALREADY_ASKED_COUNT);
+        session.setAttribute(ALREADY_ASKED_COUNT, asked + 1);
+
+        return getSpeechletResponse(speech, speech, true);
+    }
+
+    private SpeechletResponse endQuiz(final Intent intent, final Session session) {
+        String speechText;
+
+        int score = (int) session.getAttribute(SCORE);
+        int asked = (int) session.getAttribute(ALREADY_ASKED_COUNT);
+
+        if (asked != 0) {
+            speechText = String.format("Your score is %s per %s", score, asked);
+        } else {
+            speechText = "Ok, ending";
+        }
+        session.setAttribute(SCORE, 0);
+        session.setAttribute(ALREADY_ASKED_COUNT, 0);
+        session.setAttribute(ASKED_QUESTION_ID, -1);
+        return getSpeechletResponse(speechText, speechText, false);
+    }
+
+    private SpeechletResponse respondToQuestion(final Intent intent, final Session session) {
+        int score = (int) session.getAttribute(SCORE);
+        String speechText;
+
+        String category = (String) session.getAttribute(QUIZ_NAME);
+        int askedId = (int) session.getAttribute(ASKED_QUESTION_ID);
+        QuizController qc = new QuizController(quizzes.get(category));
+        Question askedQuestion = qc.forId(askedId);
+
+        if (askedQuestion != null) {
+            String response = intent.getSlot(RESPONSE_SLOT).getValue();
+            boolean valid = askedQuestion.isCorrect(response);
+            if (valid) {
+                speechText = "Right";
+                session.setAttribute(SCORE, score + 1);
+            } else {
+                speechText = "Sorry, bad answer";
+            }
+        } else {
+            speechText = "Sorry, no question was asked";
+        }
+        session.setAttribute(ASKED_QUESTION_ID, -1);
+
+        return getSpeechletResponse(speechText, speechText, false);
     }
 
     /**
@@ -104,80 +174,13 @@ public class UniquizSpeechlet implements Speechlet {
     private SpeechletResponse getWelcomeResponse() {
         // Create the welcome message.
         String speechText =
-                "This is an edit made by Defozo. Welcome to the Alexa Skills Kit sample. Please tell me your favorite color by "
-                        + "saying, my favorite color is red";
-        String repromptText =
-                "Please tell me your favorite color by saying, my favorite color is red";
+                "Welcome to universal quiz";
+//        String repromptText =
+//                "Please tell me your favorite color by saying, my favorite color is red";
 
-        return getSpeechletResponse(speechText, repromptText, true);
+        return getSpeechletResponse(speechText, null, false);
     }
 
-    /**
-     * Creates a {@code SpeechletResponse} for the intent and stores the extracted color in the
-     * Session.
-     *
-     * @param intent
-     *            intent for the request
-     * @return SpeechletResponse spoken and visual response the given intent
-     */
-    private SpeechletResponse setColorInSession(final Intent intent, final Session session) {
-        // Get the slots from the intent.
-        Map<String, Slot> slots = intent.getSlots();
-
-        // Get the color slot from the list of slots.
-        Slot favoriteColorSlot = slots.get(COLOR_SLOT);
-        String speechText, repromptText;
-
-        // Check for favorite color and create output to user.
-        if (favoriteColorSlot != null) {
-            // Store the user's favorite color in the Session and create response.
-            String favoriteColor = favoriteColorSlot.getValue();
-            session.setAttribute(COLOR_KEY, favoriteColor);
-            speechText =
-                    String.format("I now know that your favorite color is %s. You can ask me your "
-                            + "favorite color by saying, what's my favorite color?", favoriteColor);
-            repromptText =
-                    "You can ask me your favorite color by saying, what's my favorite color?";
-
-        } else {
-            // Render an error since we don't know what the users favorite color is.
-            speechText = "I'm not sure what your favorite color is, please try again";
-            repromptText =
-                    "I'm not sure what your favorite color is. You can tell me your favorite "
-                            + "color by saying, my favorite color is red";
-        }
-
-        return getSpeechletResponse(speechText, repromptText, true);
-    }
-
-    /**
-     * Creates a {@code SpeechletResponse} for the intent and get the user's favorite color from the
-     * Session.
-     *
-     * @param intent
-     *            intent for the request
-     * @return SpeechletResponse spoken and visual response for the intent
-     */
-    private SpeechletResponse getColorFromSession(final Intent intent, final Session session) {
-        String speechText;
-        boolean isAskResponse = false;
-
-        // Get the user's favorite color from the session.
-        String favoriteColor = (String) session.getAttribute(COLOR_KEY);
-
-        // Check to make sure user's favorite color is set in the session.
-        if (StringUtils.isNotEmpty(favoriteColor)) {
-            speechText = String.format("Your favorite color is %s. Goodbye.", favoriteColor);
-        } else {
-            // Since the user's favorite color is not set render an error message.
-            speechText =
-                    "I'm not sure what your favorite color is. You can say, my favorite color is "
-                            + "red";
-            isAskResponse = true;
-        }
-
-        return getSpeechletResponse(speechText, speechText, isAskResponse);
-    }
 
     /**
      * Returns a Speechlet response for a speech and reprompt text.
