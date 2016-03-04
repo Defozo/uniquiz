@@ -130,7 +130,7 @@ public class UniquizSpeechlet implements Speechlet {
         Question askedQuestion = qc.getRandomQuestion();
         session.setAttribute(ASKED_QUESTION_ID, askedQuestion.getId());
         int asked = (int) session.getAttribute(ALREADY_ASKED_COUNT);
-        String speech = asked + ". " + askedQuestion.getQuestion() + ",";
+        String speech = "One of " + qc.size() + " questions. " + askedQuestion.getQuestion() + ",";
         for (String key: askedQuestion.getAnswers().keySet()) {
             speech = speech + key + " - " + askedQuestion.getAnswers().get(key) + ",";
         }

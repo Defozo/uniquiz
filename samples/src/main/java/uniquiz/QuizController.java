@@ -16,6 +16,10 @@ public class QuizController {
         this.questions = questions;
     }
 
+    public int size() {
+        return questions.size();
+    }
+
     public Question forId(int id) {
         if (id < questions.size()) {
             return this.questions.get(id);
