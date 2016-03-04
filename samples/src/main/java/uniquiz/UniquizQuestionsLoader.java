@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  */
 public class UniquizQuestionsLoader {
 
-    public Map<String, List<Question>> loadQuestions() {
+    public Map<String, List<Question>> loadQuestions() throws IOException {
         Map<String, List<Question>> quizzes = new HashMap<>();
         String fileName = "biology.txt";
         try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
@@ -28,8 +28,6 @@ public class UniquizQuestionsLoader {
                     .map(Question::new)
                     .collect(Collectors.toList());
             quizzes.put("biology", biologyQuestions);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return quizzes;
     }

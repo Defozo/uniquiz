@@ -9,6 +9,7 @@
  */
 package uniquiz;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +66,11 @@ public class UniquizSpeechlet implements Speechlet {
             throws SpeechletException {
         log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
-        return getWelcomeResponse();
+        if (quizzes != null) {
+            return getWelcomeResponse();
+        } else {
+            return getSpeechletResponse("Error during loading questions", null, false);
+        }
     }
 
     @Override
@@ -103,7 +108,10 @@ public class UniquizSpeechlet implements Speechlet {
 
     private void initializeQuizzes() {
         UniquizQuestionsLoader uql = new UniquizQuestionsLoader();
-        quizzes = uql.loadQuestions();
+        try {
+            quizzes = uql.loadQuestions();
+        } catch (IOException ignored) {
+        }
     }
 
     private SpeechletResponse startQuiz(final Intent intent, final Session session) {
