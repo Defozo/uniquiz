@@ -3,7 +3,11 @@ package uniquiz;
 import uniquiz.model.CategoriesLinesAccumulator;
 import uniquiz.model.Question;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,14 +24,20 @@ public class UniquizQuestionsLoader {
 
     public Map<String, List<Question>> loadQuestions() throws IOException {
         Map<String, List<Question>> quizzes = new HashMap<>();
-        String fileName = "biology.txt";
-        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-            List<CategoriesLinesAccumulator> list = new ArrayList<>();
-            stream.forEach((el) -> splitIntoQuestions(list, el));
-            List<Question> biologyQuestions = list.stream()
-                    .map(Question::new)
-                    .collect(Collectors.toList());
-            quizzes.put("biology", biologyQuestions);
+        String baseUrl = "http://defozo.cba.pl/";
+        List<String> quizzesToLoad = new ArrayList<>();
+        quizzesToLoad.add("biology");
+        for (String path : quizzesToLoad) {
+            try (InputStream is = new URL(baseUrl + path + ".txt").openConnection().getInputStream();
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                 Stream<String> stream = reader.lines()) {
+                List<CategoriesLinesAccumulator> list = new ArrayList<>();
+                stream.forEach((el) -> splitIntoQuestions(list, el));
+                List<Question> biologyQuestions = list.stream()
+                        .map(Question::new)
+                        .collect(Collectors.toList());
+                quizzes.put(path, biologyQuestions);
+            }
         }
         return quizzes;
     }
