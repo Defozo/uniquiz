@@ -22,6 +22,7 @@ public class ExampleQuestionsLoader extends UniquizQuestionsLoader {
     public Map<String, List<Question>> loadQuestions() throws IOException {
         Map<String, List<Question>> quizzes = new HashMap<>();
         List<String> lines = new ArrayList<>();
+        lines.add("");
         lines.add("What is the name of study of plants?");
         lines.add(">a.Botany");
         lines.add("b.Limnology");
