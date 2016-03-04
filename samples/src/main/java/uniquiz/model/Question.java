@@ -43,7 +43,7 @@ public class Question {
     }
 
     public boolean isCorrect(String response) {
-        return correct.contains(response);
+        return correct.contains(response.replaceAll("\\.", ""));
     }
 
     public int getId() {
