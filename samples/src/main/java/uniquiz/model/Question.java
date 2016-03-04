@@ -51,7 +51,7 @@ public class Question {
     }
 
     public boolean isCorrect(String response) {
-        return correct.contains(response.replaceAll("\\.", ""));
+        return correct.contains(response.replaceAll("\\.", "").toLowerCase());
     }
 
     public int getId() {

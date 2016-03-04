@@ -48,6 +48,10 @@ public class UniquizSpeechlet implements Speechlet {
 
     private Map<String, List<Question>> quizzes = null;
 
+    public Map<String, List<Question>> getQuizzes() {
+        return quizzes;
+    }
+
     @Override
     public void onSessionStarted(final SessionStartedRequest request, final Session session)
             throws SpeechletException {
