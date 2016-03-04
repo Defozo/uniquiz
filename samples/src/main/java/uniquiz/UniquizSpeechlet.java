@@ -93,8 +93,6 @@ public class UniquizSpeechlet implements Speechlet {
             return startQuiz(intent, session);
         } else if ("EndQuizIntent".equals(intentName)) {
             session.setAttribute(QUIZ_NAME, "");
-            session.setAttribute(SCORE, 0);
-            session.setAttribute(ALREADY_ASKED_COUNT, 0);
             session.setAttribute(ASKED_QUESTION_ID, -1);
             initializeQuizzes();
             return endQuiz(intent, session);
