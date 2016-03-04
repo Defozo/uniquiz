@@ -57,10 +57,6 @@ public class UniquizSpeechlet implements Speechlet {
             throws SpeechletException {
         log.info("onSessionStarted requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
-        session.setAttribute(QUIZ_NAME, "");
-        session.setAttribute(SCORE, 0);
-        session.setAttribute(ALREADY_ASKED_COUNT, 0);
-        session.setAttribute(ASKED_QUESTION_ID, 0);
         initializeQuizzes();
         // any initialization logic goes here
     }
@@ -70,10 +66,6 @@ public class UniquizSpeechlet implements Speechlet {
             throws SpeechletException {
         log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
-        session.setAttribute(QUIZ_NAME, "");
-        session.setAttribute(SCORE, 0);
-        session.setAttribute(ALREADY_ASKED_COUNT, 0);
-        session.setAttribute(ASKED_QUESTION_ID, 0);
         initializeQuizzes();
         if (quizzes != null) {
             return getWelcomeResponse();
@@ -97,12 +89,14 @@ public class UniquizSpeechlet implements Speechlet {
             session.setAttribute(SCORE, 0);
             session.setAttribute(ALREADY_ASKED_COUNT, 0);
             session.setAttribute(ASKED_QUESTION_ID, -1);
+            initializeQuizzes();
             return startQuiz(intent, session);
         } else if ("EndQuizIntent".equals(intentName)) {
             session.setAttribute(QUIZ_NAME, "");
             session.setAttribute(SCORE, 0);
             session.setAttribute(ALREADY_ASKED_COUNT, 0);
             session.setAttribute(ASKED_QUESTION_ID, -1);
+            initializeQuizzes();
             return endQuiz(intent, session);
         } else if ("ResponseIntent".equals(intentName)) {
             return respondToQuestion(intent, session);
@@ -146,7 +140,7 @@ public class UniquizSpeechlet implements Speechlet {
 
         String extendedResponse;
         if (additionalText != null) {
-            extendedResponse = speech + additionalText;
+            extendedResponse = additionalText + speech;
         } else {
             extendedResponse = speech;
         }
