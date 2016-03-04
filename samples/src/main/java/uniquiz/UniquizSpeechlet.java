@@ -112,7 +112,7 @@ public class UniquizSpeechlet implements Speechlet {
     }
 
     private void initializeQuizzes() {
-        UniquizQuestionsLoader uql = new ExampleQuestionsLoader();
+        UniquizQuestionsLoader uql = new UniquizQuestionsLoader();
         try {
             quizzes = uql.loadQuestions();
         } catch (IOException ignored) {
