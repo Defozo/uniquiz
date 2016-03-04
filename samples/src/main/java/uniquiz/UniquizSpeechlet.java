@@ -131,11 +131,11 @@ public class UniquizSpeechlet implements Speechlet {
         QuizController qc = new QuizController(quizzes.get(name));
         Question askedQuestion = qc.getRandomQuestion();
         session.setAttribute(ASKED_QUESTION_ID, askedQuestion.getId());
-        String speech = askedQuestion.getQuestion() + ",";
+        int asked = (int) session.getAttribute(ALREADY_ASKED_COUNT);
+        String speech = asked + ". " + askedQuestion.getQuestion() + ",";
         for (String key: askedQuestion.getAnswers().keySet()) {
             speech = speech + key + " - " + askedQuestion.getAnswers().get(key) + ",";
         }
-        int asked = (int) session.getAttribute(ALREADY_ASKED_COUNT);
         session.setAttribute(ALREADY_ASKED_COUNT, asked + 1);
 
         String extendedResponse;
