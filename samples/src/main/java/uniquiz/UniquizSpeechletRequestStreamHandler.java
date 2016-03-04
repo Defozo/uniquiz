@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
-import session.*;
 
 /**
  * This class could be the handler for an AWS Lambda function powering an Alexa Skills Kit
@@ -35,6 +34,6 @@ public class UniquizSpeechletRequestStreamHandler extends SpeechletRequestStream
     }
 
     public UniquizSpeechletRequestStreamHandler() {
-        super(new session.SessionSpeechlet(), supportedApplicationIds);
+        super(new UniquizSpeechlet(), supportedApplicationIds);
     }
 }
