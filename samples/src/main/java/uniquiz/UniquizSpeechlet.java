@@ -129,10 +129,10 @@ public class UniquizSpeechlet implements Speechlet {
 
     private SpeechletResponse startQuiz(final Intent intent, final Session session) {
         session.setAttribute(QUIZ_NAME, "biology");
-        return askQuestion(intent, session);
+        return askQuestion(intent, session, null);
     }
 
-    private SpeechletResponse askQuestion(final Intent intent, final Session session) {
+    private SpeechletResponse askQuestion(final Intent intent, final Session session, String additionalText) {
         String name = (String) session.getAttribute(QUIZ_NAME);
         QuizController qc = new QuizController(quizzes.get(name));
         Question askedQuestion = qc.getRandomQuestion();
@@ -144,7 +144,14 @@ public class UniquizSpeechlet implements Speechlet {
         int asked = (int) session.getAttribute(ALREADY_ASKED_COUNT);
         session.setAttribute(ALREADY_ASKED_COUNT, asked + 1);
 
-        return getSpeechletResponse(speech, speech, true);
+        String extendedResponse;
+        if (additionalText != null) {
+            extendedResponse = speech + additionalText;
+        } else {
+            extendedResponse = speech;
+        }
+
+        return getSpeechletResponse(extendedResponse, speech, true);
     }
 
     private SpeechletResponse endQuiz(final Intent intent, final Session session) {
@@ -177,17 +184,17 @@ public class UniquizSpeechlet implements Speechlet {
             String response = intent.getSlot(RESPONSE_SLOT).getValue();
             boolean valid = askedQuestion.isCorrect(response);
             if (valid) {
-                speechText = "Right";
+                speechText = "Right, ";
                 session.setAttribute(SCORE, score + 1);
             } else {
-                speechText = "Sorry, bad answer, you said " + response + " and correct one is " + askedQuestion.correct();
+                speechText = "Sorry, bad answer, you said " + response + " and correct one is " + askedQuestion.correct() + ", ";
             }
         } else {
-            speechText = "Sorry, no question was asked";
+            speechText = "Sorry, no question was asked, ";
         }
         session.setAttribute(ASKED_QUESTION_ID, -1);
 
-        return getSpeechletResponse(speechText, speechText, false);
+        return askQuestion(intent, session, speechText);
     }
 
     /**
