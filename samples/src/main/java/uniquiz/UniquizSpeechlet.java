@@ -153,7 +153,7 @@ public class UniquizSpeechlet implements Speechlet {
         int asked = (int) session.getAttribute(ALREADY_ASKED_COUNT);
 
         if (asked != 0) {
-            speechText = String.format("Your score is %s per %s", score, asked);
+            speechText = String.format("Your score is %s per %s", score, asked-1);
         } else {
             speechText = "Ok, ending";
         }
@@ -197,7 +197,7 @@ public class UniquizSpeechlet implements Speechlet {
     private SpeechletResponse getWelcomeResponse() {
         // Create the welcome message.
         String speechText =
-                "Welcome to universal quiz";
+                "Welcome to universal quiz, say start quiz to begin";
         String repromptText =
                 "Ask me about something";
 
