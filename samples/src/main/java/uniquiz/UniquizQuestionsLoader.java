@@ -32,7 +32,7 @@ public class UniquizQuestionsLoader {
         return quizzes;
     }
 
-    private void splitIntoQuestions(List<CategoriesLinesAccumulator> acc, String newElement) {
+    protected void splitIntoQuestions(List<CategoriesLinesAccumulator> acc, String newElement) {
         if (isJustNewLine(newElement)) {
             acc.stream()
                     .filter((cat) -> !cat.isClosed())
@@ -53,11 +53,11 @@ public class UniquizQuestionsLoader {
         }
     }
 
-    private Boolean isJustNewLine(String line) {
+    protected Boolean isJustNewLine(String line) {
         return line.equals("");
     }
 
-    private Boolean isEndLine(String line) {
+    protected Boolean isEndLine(String line) {
         return line.equals(">end");
     }
 }

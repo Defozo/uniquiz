@@ -56,7 +56,7 @@ public class UniquizSpeechlet implements Speechlet {
         session.setAttribute(QUIZ_NAME, "");
         session.setAttribute(SCORE, 0);
         session.setAttribute(ALREADY_ASKED_COUNT, 0);
-        session.setAttribute(ASKED_QUESTION_ID, -1);
+        session.setAttribute(ASKED_QUESTION_ID, 0);
         initializeQuizzes();
         // any initialization logic goes here
     }
@@ -66,6 +66,11 @@ public class UniquizSpeechlet implements Speechlet {
             throws SpeechletException {
         log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
+        session.setAttribute(QUIZ_NAME, "");
+        session.setAttribute(SCORE, 0);
+        session.setAttribute(ALREADY_ASKED_COUNT, 0);
+        session.setAttribute(ASKED_QUESTION_ID, 0);
+        initializeQuizzes();
         if (quizzes != null) {
             return getWelcomeResponse();
         } else {
@@ -107,7 +112,7 @@ public class UniquizSpeechlet implements Speechlet {
     }
 
     private void initializeQuizzes() {
-        UniquizQuestionsLoader uql = new UniquizQuestionsLoader();
+        UniquizQuestionsLoader uql = new ExampleQuestionsLoader();
         try {
             quizzes = uql.loadQuestions();
         } catch (IOException ignored) {
