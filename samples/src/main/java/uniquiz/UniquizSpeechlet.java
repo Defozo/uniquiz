@@ -88,15 +88,19 @@ public class UniquizSpeechlet implements Speechlet {
         Intent intent = request.getIntent();
         String intentName = (intent != null) ? intent.getName() : null;
 
-        // Note: If the session is started with an intent, no welcome message will be rendered;
-        // rather, the intent specific response will be returned.
-        int questionId = (int) session.getAttribute(ASKED_QUESTION_ID);
-
         if ("StartQuizIntent".equals(intentName)) {
+            session.setAttribute(QUIZ_NAME, "");
+            session.setAttribute(SCORE, 0);
+            session.setAttribute(ALREADY_ASKED_COUNT, 0);
+            session.setAttribute(ASKED_QUESTION_ID, -1);
             return startQuiz(intent, session);
         } else if ("EndQuizIntent".equals(intentName)) {
+            session.setAttribute(QUIZ_NAME, "");
+            session.setAttribute(SCORE, 0);
+            session.setAttribute(ALREADY_ASKED_COUNT, 0);
+            session.setAttribute(ASKED_QUESTION_ID, -1);
             return endQuiz(intent, session);
-        } else if ("ResponseIntent".equals(intentName) && questionId != -1) {
+        } else if ("ResponseIntent".equals(intentName)) {
             return respondToQuestion(intent, session);
         } else {
             throw new SpeechletException("Invalid Intent");
