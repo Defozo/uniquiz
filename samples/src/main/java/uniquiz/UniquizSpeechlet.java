@@ -133,7 +133,10 @@ public class UniquizSpeechlet implements Speechlet {
         QuizController qc = new QuizController(quizzes.get(name));
         Question askedQuestion = qc.getRandomQuestion();
         session.setAttribute(ASKED_QUESTION_ID, askedQuestion.getId());
-        String speech = askedQuestion.getQuestion();
+        String speech = askedQuestion.getQuestion() + " ";
+        for (String key: askedQuestion.getAnswers().keySet()) {
+            speech = speech + key + " " + askedQuestion.getAnswers().get(key) + " ";
+        }
         int asked = (int) session.getAttribute(ALREADY_ASKED_COUNT);
         session.setAttribute(ALREADY_ASKED_COUNT, asked + 1);
 
@@ -192,10 +195,10 @@ public class UniquizSpeechlet implements Speechlet {
         // Create the welcome message.
         String speechText =
                 "Welcome to universal quiz";
-//        String repromptText =
-//                "Please tell me your favorite color by saying, my favorite color is red";
+        String repromptText =
+                "Ask me about something";
 
-        return getSpeechletResponse(speechText, null, false);
+        return getSpeechletResponse(speechText, repromptText, true);
     }
 
 
