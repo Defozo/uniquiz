@@ -21,7 +21,6 @@ public class ExampleQuestionsLoader extends UniquizQuestionsLoader {
     @Override
     public Map<String, List<Question>> loadQuestions() throws IOException {
         Map<String, List<Question>> quizzes = new HashMap<>();
-        String fileName = "biology.txt";
         List<String> lines = new ArrayList<>();
         lines.add("What is the name of study of plants?");
         lines.add(">a.Botany");

@@ -48,8 +48,7 @@ public class UniquizQuestionsLoader {
             acc.stream()
                     .filter((cat) -> !cat.isClosed())
                     .findFirst()
-                    .get()
-                    .push(newElement);
+                    .ifPresent((e) -> e.push(newElement));
         }
     }
 
